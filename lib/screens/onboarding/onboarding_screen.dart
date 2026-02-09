@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flavour/screens/home/home_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -15,24 +15,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingPage> _pages = [
     OnboardingPage(
       title: 'Discover Recipes',
-      description:
-          'Explore thousands of delicious recipes from around the world',
-      lottieAsset: 'assets/animations/cooking.json',
+      description: 'Explore thousands of delicious recipes from around the world',
+      icon: Icons.restaurant_menu,
       color: const Color(0xFFFF6B35),
     ),
     OnboardingPage(
       title: 'Save Favorites',
       description: 'Bookmark your favorite recipes and access them anytime',
-      lottieAsset: 'assets/animations/bookmark.json',
+      icon: Icons.favorite,
       color: const Color(0xFF2EC4B6),
     ),
     OnboardingPage(
       title: 'Start Cooking',
       description: 'Follow step-by-step instructions and become a master chef',
-      lottieAsset: 'assets/animations/chef.json',
+      icon: Icons.soup_kitchen,
       color: const Color(0xFFFFD93D),
     ),
   ];
+
+  void _goToHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const _MainScreenWrapper(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,31 +97,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   }),
                 ),
                 const SizedBox(height: 32),
-                // Get Started button
-                if (_currentPage == _pages.length - 1)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Navigate to home
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _pages[_currentPage].color,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 56),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                // Get Started / Next button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_currentPage == _pages.length - 1) {
+                        _goToHome();
+                      } else {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _pages[_currentPage].color,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    child: Text(
+                      _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
@@ -122,9 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             top: 60,
             right: 20,
             child: TextButton(
-              onPressed: () {
-                // Skip to home
-              },
+              onPressed: _goToHome,
               child: const Text('Skip'),
             ),
           ),
@@ -139,21 +151,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Use Lottie animation or placeholder
+          // Icon placeholder (replace with Lottie if you have animations)
           Container(
-            height: 300,
-            width: 300,
+            height: 200,
+            width: 200,
             decoration: BoxDecoration(
               color: page.color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.restaurant_menu, size: 120, color: page.color),
-            // Replace with: Lottie.asset(page.lottieAsset)
+            child: Icon(
+              page.icon,
+              size: 100,
+              color: page.color,
+            ),
           ),
           const SizedBox(height: 48),
           Text(
             page.title,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -175,13 +193,53 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 class OnboardingPage {
   final String title;
   final String description;
-  final String lottieAsset;
+  final IconData icon;
   final Color color;
 
   OnboardingPage({
     required this.title,
     required this.description,
-    required this.lottieAsset,
+    required this.icon,
     required this.color,
   });
+}
+
+// Temporary wrapper - you'll move this to main.dart later
+class _MainScreenWrapper extends StatefulWidget {
+  const _MainScreenWrapper();
+
+  @override
+  State<_MainScreenWrapper> createState() => _MainScreenWrapperState();
+}
+
+class _MainScreenWrapperState extends State<_MainScreenWrapper> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    // Import HomeScreen when you create it
+    // For now, show placeholder
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          // Replace with: const HomeScreen(),
+          const HomeScreen(),
+          const Center(child: Text('Search')),
+          const Center(child: Text('Favorites')),
+          const Center(child: Text('Profile')),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) => setState(() => _currentIndex = index),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
+          NavigationDestination(icon: Icon(Icons.favorite_outline), selectedIcon: Icon(Icons.favorite), label: 'Favorites'),
+          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
+    );
+  }
 }
