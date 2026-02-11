@@ -1,4 +1,3 @@
-import 'package:flavour/screens/favourite/favourites_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flavour/core/theme/app_theme.dart';
@@ -10,6 +9,7 @@ import 'package:flavour/screens/search/search_screen.dart';
 import 'package:flavour/screens/favourite/favourites_screen.dart';
 import 'package:flavour/screens/profile/profile_screen.dart';
 import 'package:flavour/widgets/navigation/animated_bottom_nav.dart';
+import 'package:flavour/screens/splash/splash_screen.dart';
 
 void main() {
   runApp(
@@ -36,7 +36,7 @@ class FlavourApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
-      home: const OnboardingScreen(),
+      home: const SplashScreen()
     );
   }
 }
