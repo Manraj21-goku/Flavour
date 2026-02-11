@@ -1,5 +1,9 @@
+import 'package:flavour/screens/favourite/favourites_screen.dart';
+import 'package:flavour/screens/profile/profile_screen.dart';
+import 'package:flavour/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flavour/screens/home/home_screen.dart';
+import 'package:flavour/main.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -37,7 +41,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const _MainScreenWrapper(),
+        builder: (context) => const MainScreen(),
       ),
     );
   }
@@ -204,42 +208,42 @@ class OnboardingPage {
   });
 }
 
-// Temporary wrapper - you'll move this to main.dart later
-class _MainScreenWrapper extends StatefulWidget {
-  const _MainScreenWrapper();
-
-  @override
-  State<_MainScreenWrapper> createState() => _MainScreenWrapperState();
-}
-
-class _MainScreenWrapperState extends State<_MainScreenWrapper> {
-  int _currentIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    // Import HomeScreen when you create it
-    // For now, show placeholder
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          // Replace with: const HomeScreen(),
-          const HomeScreen(),
-          const Center(child: Text('Search')),
-          const Center(child: Text('Favorites')),
-          const Center(child: Text('Profile')),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) => setState(() => _currentIndex = index),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-          NavigationDestination(icon: Icon(Icons.favorite_outline), selectedIcon: Icon(Icons.favorite), label: 'Favorites'),
-          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
-    );
-  }
-}
+// // Temporary wrapper - you'll move this to main.dart later
+// class _MainScreenWrapper extends StatefulWidget {
+//   const _MainScreenWrapper();
+//
+//   @override
+//   State<_MainScreenWrapper> createState() => _MainScreenWrapperState();
+// }
+//
+// class _MainScreenWrapperState extends State<_MainScreenWrapper> {
+//   int _currentIndex = 0;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // Import HomeScreen when you create it
+//     // For now, show placeholder
+//     return Scaffold(
+//       body: IndexedStack(
+//         index: _currentIndex,
+//         children: [
+//           // Replace with: const HomeScreen(),
+//           const HomeScreen(),
+//           const SearchScreen(),
+//           const FavouritesScreen(),
+//           const ProfileScreen(),
+//         ],
+//       ),
+//       bottomNavigationBar: NavigationBar(
+//         selectedIndex: _currentIndex,
+//         onDestinationSelected: (index) => setState(() => _currentIndex = index),
+//         destinations: const [
+//           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+//           NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
+//           NavigationDestination(icon: Icon(Icons.favorite_outline), selectedIcon: Icon(Icons.favorite), label: 'Favorites'),
+//           NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
+//         ],
+//       ),
+//     );
+//   }
+// }

@@ -1,14 +1,23 @@
+import 'package:flavour/screens/favourite/favourites_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flavour/core/theme/app_theme.dart';
 import 'package:flavour/core/theme/theme_provider.dart';
+import 'package:flavour/providers/recipe_provider.dart';
 import 'package:flavour/screens/onboarding/onboarding_screen.dart';
+import 'package:flavour/screens/home/home_screen.dart';
+import 'package:flavour/screens/search/search_screen.dart';
+import 'package:flavour/screens/favourite/favourites_screen.dart';
+import 'package:flavour/screens/profile/profile_screen.dart';
 import 'package:flavour/widgets/navigation/animated_bottom_nav.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => RecipeProvider()),
+      ],
       child: const FlavourApp(),
     ),
   );
@@ -27,15 +36,19 @@ class FlavourApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
-      home: const OnboardingScreen(), // Start with onboarding
-      // Or use: const MainScreen(), // Skip onboarding
+      home: const OnboardingScreen(),
     );
   }
 }
 
-// Main screen with bottom navigation (use after onboarding)
+// Main screen with navigation - use this after onboarding
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
+  static void switchToTab(BuildContext context, int index) {
+    final state = context.findAncestorStateOfType<_MainScreenState>();
+    state?.switchTab(index);
+  }
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -44,12 +57,15 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // Placeholder screens - replace with your actual screens
-  final List<Widget> _screens = [
-    const _PlaceholderScreen(title: 'Home', icon: Icons.home),
-    const _PlaceholderScreen(title: 'Search', icon: Icons.search),
-    const _PlaceholderScreen(title: 'Favorites', icon: Icons.favorite),
-    const _PlaceholderScreen(title: 'Profile', icon: Icons.person),
+  void switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
+
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    SearchScreen(),
+    FavouritesScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -84,49 +100,6 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Profile',
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Temporary placeholder screen
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  final IconData icon;
-
-  const _PlaceholderScreen({required this.title, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          // Theme toggle button
-          IconButton(
-            icon: Icon(
-              Theme.of(context).brightness == Brightness.dark
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
-            ),
-            onPressed: () {
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(
-              '$title Screen',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
       ),
     );
   }

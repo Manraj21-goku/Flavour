@@ -2,6 +2,7 @@ import 'package:flavour/models/recipe.dart';
 
 class MockRecipes {
   static List<Recipe> recipes = [
+    // === PASTA ===
     Recipe(
       id: '1',
       title: 'Creamy Tuscan Pasta',
@@ -12,7 +13,6 @@ class MockRecipes {
       calories: 450,
       servings: 4,
       rating: 4.8,
-      isFavorite: true,
       ingredients: [
         Ingredient(name: 'Penne pasta', quantity: '400', unit: 'g'),
         Ingredient(name: 'Heavy cream', quantity: '1', unit: 'cup'),
@@ -31,6 +31,8 @@ class MockRecipes {
       ],
       nutrition: NutritionInfo(protein: 15, carbs: 52, fat: 18, fiber: 4),
     ),
+
+    // === SEAFOOD ===
     Recipe(
       id: '2',
       title: 'Grilled Salmon Bowl',
@@ -41,7 +43,6 @@ class MockRecipes {
       calories: 380,
       servings: 2,
       rating: 4.9,
-      isFavorite: false,
       ingredients: [
         Ingredient(name: 'Salmon fillet', quantity: '300', unit: 'g'),
         Ingredient(name: 'Quinoa', quantity: '1', unit: 'cup'),
@@ -60,6 +61,8 @@ class MockRecipes {
       ],
       nutrition: NutritionInfo(protein: 35, carbs: 28, fat: 14, fiber: 6),
     ),
+
+    // === BREAKFAST ===
     Recipe(
       id: '3',
       title: 'Avocado Toast Deluxe',
@@ -70,7 +73,6 @@ class MockRecipes {
       calories: 320,
       servings: 1,
       rating: 4.5,
-      isFavorite: true,
       ingredients: [
         Ingredient(name: 'Sourdough bread', quantity: '2', unit: 'slices'),
         Ingredient(name: 'Ripe avocado', quantity: '1', unit: null),
@@ -89,6 +91,8 @@ class MockRecipes {
       ],
       nutrition: NutritionInfo(protein: 14, carbs: 32, fat: 22, fiber: 8),
     ),
+
+    // === ASIAN ===
     Recipe(
       id: '4',
       title: 'Thai Green Curry',
@@ -99,7 +103,6 @@ class MockRecipes {
       calories: 420,
       servings: 4,
       rating: 4.7,
-      isFavorite: false,
       ingredients: [
         Ingredient(name: 'Green curry paste', quantity: '3', unit: 'tbsp'),
         Ingredient(name: 'Coconut milk', quantity: '400', unit: 'ml'),
@@ -118,6 +121,8 @@ class MockRecipes {
       ],
       nutrition: NutritionInfo(protein: 28, carbs: 38, fat: 20, fiber: 3),
     ),
+
+    // === ITALIAN ===
     Recipe(
       id: '5',
       title: 'Classic Margherita Pizza',
@@ -128,7 +133,6 @@ class MockRecipes {
       calories: 280,
       servings: 4,
       rating: 4.6,
-      isFavorite: true,
       ingredients: [
         Ingredient(name: 'Pizza dough', quantity: '500', unit: 'g'),
         Ingredient(name: 'San Marzano tomatoes', quantity: '400', unit: 'g'),
@@ -147,6 +151,8 @@ class MockRecipes {
       ],
       nutrition: NutritionInfo(protein: 12, carbs: 35, fat: 10, fiber: 2),
     ),
+
+    // === BREAKFAST ===
     Recipe(
       id: '6',
       title: 'Berry Smoothie Bowl',
@@ -157,7 +163,6 @@ class MockRecipes {
       calories: 290,
       servings: 1,
       rating: 4.4,
-      isFavorite: false,
       ingredients: [
         Ingredient(name: 'Frozen acai packet', quantity: '1', unit: null),
         Ingredient(name: 'Frozen mixed berries', quantity: '1', unit: 'cup'),
@@ -175,6 +180,214 @@ class MockRecipes {
         'Serve immediately.',
       ],
       nutrition: NutritionInfo(protein: 6, carbs: 52, fat: 8, fiber: 10),
+    ),
+
+    // === DESSERT ===
+    Recipe(
+      id: '7',
+      title: 'Chocolate Lava Cake',
+      description: 'Decadent molten chocolate cake with a gooey center',
+      imageUrl: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=800',
+      category: 'Dessert',
+      cookingTime: 20,
+      calories: 380,
+      servings: 2,
+      rating: 4.9,
+      ingredients: [
+        Ingredient(name: 'Dark chocolate', quantity: '100', unit: 'g'),
+        Ingredient(name: 'Butter', quantity: '50', unit: 'g'),
+        Ingredient(name: 'Eggs', quantity: '2', unit: null),
+        Ingredient(name: 'Sugar', quantity: '50', unit: 'g'),
+        Ingredient(name: 'Flour', quantity: '2', unit: 'tbsp'),
+        Ingredient(name: 'Vanilla extract', quantity: '1', unit: 'tsp'),
+      ],
+      instructions: [
+        'Preheat oven to 425°F. Grease two ramekins.',
+        'Melt chocolate and butter together.',
+        'Whisk eggs and sugar until fluffy.',
+        'Fold chocolate mixture into eggs.',
+        'Add flour and vanilla, mix gently.',
+        'Pour into ramekins and bake 12-14 minutes.',
+        'Let cool 1 minute, then invert onto plates.',
+      ],
+      nutrition: NutritionInfo(protein: 6, carbs: 42, fat: 22, fiber: 2),
+    ),
+
+    Recipe(
+      id: '8',
+      title: 'Tiramisu',
+      description: 'Classic Italian dessert with espresso-soaked ladyfingers',
+      imageUrl: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800',
+      category: 'Dessert',
+      cookingTime: 30,
+      calories: 320,
+      servings: 8,
+      rating: 4.8,
+      ingredients: [
+        Ingredient(name: 'Mascarpone cheese', quantity: '500', unit: 'g'),
+        Ingredient(name: 'Ladyfinger cookies', quantity: '200', unit: 'g'),
+        Ingredient(name: 'Espresso (cooled)', quantity: '1', unit: 'cup'),
+        Ingredient(name: 'Egg yolks', quantity: '4', unit: null),
+        Ingredient(name: 'Sugar', quantity: '100', unit: 'g'),
+        Ingredient(name: 'Cocoa powder', quantity: '2', unit: 'tbsp'),
+      ],
+      instructions: [
+        'Whisk egg yolks with sugar until pale.',
+        'Add mascarpone and mix until smooth.',
+        'Dip ladyfingers briefly in espresso.',
+        'Layer ladyfingers in dish.',
+        'Spread mascarpone mixture over.',
+        'Repeat layers, ending with cream.',
+        'Refrigerate 4 hours, dust with cocoa.',
+      ],
+      nutrition: NutritionInfo(protein: 8, carbs: 35, fat: 18, fiber: 1),
+    ),
+
+    Recipe(
+      id: '9',
+      title: 'New York Cheesecake',
+      description: 'Rich and creamy classic cheesecake with graham cracker crust',
+      imageUrl: 'https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=800',
+      category: 'Dessert',
+      cookingTime: 90,
+      calories: 410,
+      servings: 12,
+      rating: 4.7,
+      ingredients: [
+        Ingredient(name: 'Cream cheese', quantity: '900', unit: 'g'),
+        Ingredient(name: 'Graham crackers', quantity: '200', unit: 'g'),
+        Ingredient(name: 'Butter', quantity: '100', unit: 'g'),
+        Ingredient(name: 'Sugar', quantity: '200', unit: 'g'),
+        Ingredient(name: 'Eggs', quantity: '4', unit: null),
+        Ingredient(name: 'Sour cream', quantity: '1', unit: 'cup'),
+      ],
+      instructions: [
+        'Crush graham crackers and mix with melted butter.',
+        'Press into springform pan, bake 10 min at 325°F.',
+        'Beat cream cheese until smooth.',
+        'Add sugar, then eggs one at a time.',
+        'Mix in sour cream and vanilla.',
+        'Pour over crust, bake 55 minutes.',
+        'Cool in oven with door cracked, then refrigerate.',
+      ],
+      nutrition: NutritionInfo(protein: 7, carbs: 38, fat: 28, fiber: 0),
+    ),
+
+    // === SALADS ===
+    Recipe(
+      id: '10',
+      title: 'Caesar Salad',
+      description: 'Classic romaine salad with homemade Caesar dressing',
+      imageUrl: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800',
+      category: 'Salads',
+      cookingTime: 15,
+      calories: 220,
+      servings: 2,
+      rating: 4.5,
+      ingredients: [
+        Ingredient(name: 'Romaine lettuce', quantity: '1', unit: 'head'),
+        Ingredient(name: 'Parmesan cheese', quantity: '1/2', unit: 'cup'),
+        Ingredient(name: 'Croutons', quantity: '1', unit: 'cup'),
+        Ingredient(name: 'Anchovy paste', quantity: '1', unit: 'tsp'),
+        Ingredient(name: 'Garlic', quantity: '2', unit: 'cloves'),
+        Ingredient(name: 'Lemon juice', quantity: '2', unit: 'tbsp'),
+      ],
+      instructions: [
+        'Whisk garlic, anchovy paste, and lemon juice.',
+        'Add mayonnaise and parmesan, mix well.',
+        'Chop romaine into bite-sized pieces.',
+        'Toss lettuce with dressing.',
+        'Top with croutons and extra parmesan.',
+        'Add grilled chicken if desired.',
+      ],
+      nutrition: NutritionInfo(protein: 8, carbs: 12, fat: 16, fiber: 3),
+    ),
+
+    Recipe(
+      id: '11',
+      title: 'Greek Salad',
+      description: 'Fresh Mediterranean salad with feta and olives',
+      imageUrl: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800',
+      category: 'Salads',
+      cookingTime: 10,
+      calories: 180,
+      servings: 4,
+      rating: 4.6,
+      ingredients: [
+        Ingredient(name: 'Cucumber', quantity: '1', unit: 'large'),
+        Ingredient(name: 'Tomatoes', quantity: '3', unit: 'medium'),
+        Ingredient(name: 'Red onion', quantity: '1/2', unit: null),
+        Ingredient(name: 'Feta cheese', quantity: '200', unit: 'g'),
+        Ingredient(name: 'Kalamata olives', quantity: '1/2', unit: 'cup'),
+        Ingredient(name: 'Olive oil', quantity: '3', unit: 'tbsp'),
+      ],
+      instructions: [
+        'Chop cucumber, tomatoes, and onion.',
+        'Combine vegetables in a large bowl.',
+        'Add olives and crumbled feta.',
+        'Drizzle with olive oil and red wine vinegar.',
+        'Season with oregano, salt, and pepper.',
+        'Toss gently and serve immediately.',
+      ],
+      nutrition: NutritionInfo(protein: 6, carbs: 10, fat: 14, fiber: 2),
+    ),
+
+    Recipe(
+      id: '12',
+      title: 'Quinoa Power Bowl',
+      description: 'Nutritious grain bowl with roasted vegetables and tahini',
+      imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+      category: 'Salads',
+      cookingTime: 25,
+      calories: 340,
+      servings: 2,
+      rating: 4.7,
+      ingredients: [
+        Ingredient(name: 'Quinoa', quantity: '1', unit: 'cup'),
+        Ingredient(name: 'Sweet potato', quantity: '1', unit: 'medium'),
+        Ingredient(name: 'Chickpeas', quantity: '1', unit: 'can'),
+        Ingredient(name: 'Kale', quantity: '2', unit: 'cups'),
+        Ingredient(name: 'Tahini', quantity: '2', unit: 'tbsp'),
+        Ingredient(name: 'Avocado', quantity: '1', unit: null),
+      ],
+      instructions: [
+        'Cook quinoa according to package.',
+        'Cube and roast sweet potato at 400°F for 20 min.',
+        'Roast chickpeas with cumin until crispy.',
+        'Massage kale with olive oil and lemon.',
+        'Assemble bowls with all ingredients.',
+        'Drizzle with tahini dressing.',
+      ],
+      nutrition: NutritionInfo(protein: 14, carbs: 48, fat: 12, fiber: 10),
+    ),
+
+    Recipe(
+      id: '13',
+      title: 'Caprese Salad',
+      description: 'Simple Italian salad with fresh mozzarella and tomatoes',
+      imageUrl: 'https://images.unsplash.com/photo-1608032077018-c9aad9565d29?w=800',
+      category: 'Salads',
+      cookingTime: 5,
+      calories: 250,
+      servings: 2,
+      rating: 4.4,
+      ingredients: [
+        Ingredient(name: 'Fresh mozzarella', quantity: '250', unit: 'g'),
+        Ingredient(name: 'Ripe tomatoes', quantity: '3', unit: 'large'),
+        Ingredient(name: 'Fresh basil', quantity: '1', unit: 'bunch'),
+        Ingredient(name: 'Balsamic glaze', quantity: '2', unit: 'tbsp'),
+        Ingredient(name: 'Extra virgin olive oil', quantity: '2', unit: 'tbsp'),
+        Ingredient(name: 'Sea salt', quantity: '1/2', unit: 'tsp'),
+      ],
+      instructions: [
+        'Slice mozzarella and tomatoes evenly.',
+        'Arrange alternating on a platter.',
+        'Tuck fresh basil leaves between slices.',
+        'Drizzle with olive oil.',
+        'Add balsamic glaze in zigzag pattern.',
+        'Season with salt and pepper.',
+      ],
+      nutrition: NutritionInfo(protein: 14, carbs: 8, fat: 18, fiber: 1),
     ),
   ];
 
