@@ -1,6 +1,6 @@
 # flavour
 
-Flavour-way to discover recipes
+Flavour-way to discover recipes, and learn cooking...
 
 ## Getting Started
 
