@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flavour/models/recipe.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 class CookingSessionScreen extends StatefulWidget {
   final Recipe recipe;
@@ -17,7 +19,7 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
     with TickerProviderStateMixin {
   // Page state
   int _currentPage = 0; // 0: Cooking, 1: Complete/Photo
-
+  final ImagePicker _imagePicker = ImagePicker();
   // Timer state
   late int _totalSeconds;
   late int _remainingSeconds;
@@ -162,69 +164,94 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
   }
 
   Future<void> _takePhoto() async {
-    // For now, show a placeholder dialog
-    // In production, use image_picker package
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('📸 Capture Your Creation'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.camera_alt, size: 48, color: Colors.grey),
-                  SizedBox(height: 8),
-                  Text('Camera Preview'),
-                  SizedBox(height: 4),
-                  // Text(
-                  //   'Add image_picker package\nfor real camera access',
-                  //   textAlign: TextAlign.center,
-                  //   style: TextStyle(fontSize: 12, color: Colors.grey),
-                  // ),
-                ],
-              ),
-            ),
-          ],
+    try {
+      // Show options: Camera or Gallery
+      final source = await showModalBottomSheet<ImageSource>(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
-              setState(() {
-                // Simulate photo taken
-                _capturedPhoto = File('placeholder');
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Photo saved! 🎉'),
-                  backgroundColor: Color(0xFF2EC4B6),
+        builder: (context) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Add Photo',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              );
-            },
-            icon: const Icon(Icons.camera),
-            label: const Text('Take Photo'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B35),
-              foregroundColor: Colors.white,
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF6B35).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.camera_alt, color: Color(0xFFFF6B35)),
+                  ),
+                  title: const Text('Take Photo'),
+                  subtitle: const Text('Use your camera'),
+                  onTap: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2EC4B6).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.photo_library, color: Color(0xFF2EC4B6)),
+                  ),
+                  title: const Text('Choose from Gallery'),
+                  subtitle: const Text('Select an existing photo'),
+                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
           ),
-        ],
-      ),
-    );
+        ),
+      );
+
+      if (source == null) return;
+
+      // Pick image
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: source,
+        maxWidth: 1080,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _capturedPhoto = File(pickedFile.path);
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Photo saved! 🎉'),
+              backgroundColor: Color(0xFF2EC4B6),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -1117,7 +1144,21 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  if (_capturedPhoto != null)
+                  // In the photo section, add this to show the captured photo:
+                  if (_capturedPhoto != null && _capturedPhoto!.path != 'placeholder')
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      height: 200,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        image: DecorationImage(
+                          image: FileImage(_capturedPhoto!),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )
+                  else if (_capturedPhoto != null)
                     Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       padding: const EdgeInsets.all(8),

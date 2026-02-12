@@ -47,5 +47,9 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSCameraUsageDescription</key>
+        <string>We need camera access to take photos of your cooked dishes</string>
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>We need photo library access to save your dish photos</string>
 	</dict>
 </plist>
