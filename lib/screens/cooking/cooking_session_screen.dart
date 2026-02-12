@@ -24,6 +24,7 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
   Timer? _timer;
   bool _isRunning = false;
   bool _isCompleted = false;
+  bool get _allStepsCompleted => _stepCompleted.every((completed) => completed);
 
   // Animation controllers
   late AnimationController _cookingAnimationController;
@@ -185,11 +186,11 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
                   SizedBox(height: 8),
                   Text('Camera Preview'),
                   SizedBox(height: 4),
-                  Text(
-                    'Add image_picker package\nfor real camera access',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
+                  // Text(
+                  //   'Add image_picker package\nfor real camera access',
+                  //   textAlign: TextAlign.center,
+                  //   style: TextStyle(fontSize: 12, color: Colors.grey),
+                  // ),
                 ],
               ),
             ),
@@ -580,7 +581,7 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 15, color: Colors.grey[600],fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -692,15 +693,42 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
       padding: const EdgeInsets.symmetric(horizontal: 24),
       itemCount: widget.recipe.instructions.length,
       itemBuilder: (context, index) {
-        final isCurrentStep = index == _currentStep;
         final isCompleted = _stepCompleted[index];
+        final isCurrentStep = index == _currentStep;
+        final isLocked = index > _currentStep && !isCompleted;
 
         return GestureDetector(
           onTap: () {
+            // Locked steps can't be tapped
+            if (isLocked) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Complete Step ${_currentStep + 1} first'),
+                  duration: const Duration(seconds: 1),
+                  backgroundColor: Colors.grey[700],
+                ),
+              );
+              return;
+            }
+
             setState(() {
-              _stepCompleted[index] = !_stepCompleted[index];
-              if (_stepCompleted[index] && index < widget.recipe.instructions.length - 1) {
-                _currentStep = index + 1;
+              if (isCompleted) {
+                // UNDO: Uncheck this step and all steps after it
+                _stepCompleted[index] = false;
+                // Uncheck all subsequent steps too
+                for (int i = index + 1; i < _stepCompleted.length; i++) {
+                  _stepCompleted[i] = false;
+                }
+                // Move current step back to this one
+                _currentStep = index;
+              } else if (index == _currentStep) {
+                // COMPLETE: Mark current step as done
+                _stepCompleted[index] = true;
+                // Move to next step if not the last one
+                if (index < widget.recipe.instructions.length - 1) {
+                  _currentStep = index + 1;
+                }
+                // If it's the last step, _currentStep stays (all done!)
               }
             });
             HapticFeedback.lightImpact();
@@ -710,19 +738,25 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isCurrentStep
+              color: isCurrentStep && !isCompleted
                   ? const Color(0xFFFF6B35).withOpacity(0.1)
+                  : isCompleted
+                  ? const Color(0xFF2EC4B6).withOpacity(0.05)
+                  : isLocked
+                  ? Colors.grey[100]
                   : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isCurrentStep
+                color: isCurrentStep && !isCompleted
                     ? const Color(0xFFFF6B35)
+                    : isCompleted
+                    ? const Color(0xFF2EC4B6).withOpacity(0.3)
                     : Colors.transparent,
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withOpacity(isLocked ? 0.01 : 0.03),
                   blurRadius: 10,
                 ),
               ],
@@ -730,7 +764,7 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Step number / check
+                // Step number / check / lock
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   width: 32,
@@ -740,12 +774,16 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
                         ? const Color(0xFF2EC4B6)
                         : isCurrentStep
                         ? const Color(0xFFFF6B35)
+                        : isLocked
+                        ? Colors.grey[300]
                         : Colors.grey[300],
                     shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: isCompleted
                         ? const Icon(Icons.check, color: Colors.white, size: 18)
+                        : isLocked
+                        ? Icon(Icons.lock, color: Colors.grey[500], size: 16)
                         : Text(
                       '${index + 1}',
                       style: TextStyle(
@@ -757,16 +795,51 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    widget.recipe.instructions[index],
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.5,
-                      decoration: isCompleted ? TextDecoration.lineThrough : null,
-                      color: isCompleted ? Colors.grey : Colors.black87,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.recipe.instructions[index],
+                        style: TextStyle(
+                          fontSize: 15,
+                          height: 1.5,
+                          decoration: isCompleted ? TextDecoration.lineThrough : null,
+                          color: isCompleted
+                              ? Colors.grey
+                              : isLocked
+                              ? Colors.grey[400]
+                              : Colors.black87,
+                        ),
+                      ),
+                      // Show hint text
+                      if ((isCurrentStep && !isCompleted) || isCompleted)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            isCompleted
+                                ? 'Tap to undo'
+                                : index == widget.recipe.instructions.length - 1
+                                ? 'Tap to complete final step!'
+                                : 'Tap to mark complete',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isCompleted
+                                  ? const Color(0xFF2EC4B6).withOpacity(0.8)
+                                  : const Color(0xFFFF6B35).withOpacity(0.8),
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
+                // Undo icon for completed steps
+                if (isCompleted)
+                  Icon(
+                    Icons.undo,
+                    color: const Color(0xFF2EC4B6).withOpacity(0.6),
+                    size: 20,
+                  ),
               ],
             ),
           ),
@@ -774,7 +847,6 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
       },
     );
   }
-
   Widget _buildIngredientsTab() {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -834,26 +906,100 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
   }
 
   Widget _buildBottomControls() {
+    final allComplete = _allStepsCompleted;
+    final completedCount = _stepCompleted.where((s) => s).length;
+    final totalSteps = _stepCompleted.length;
+
     return Container(
       padding: const EdgeInsets.all(24),
-      child: ElevatedButton(
-        onPressed: _finishCooking,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF2EC4B6),
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAF9F7),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
           ),
-          elevation: 0,
-        ),
-        child: const Text(
-          'Finish Cooking',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: completedCount / totalSteps,
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation(
+                allComplete ? const Color(0xFF2EC4B6) : const Color(0xFFFF6B35),
+              ),
+              minHeight: 6,
+            ),
           ),
-        ),
+          const SizedBox(height: 8),
+
+          // Progress text
+          Text(
+            '$completedCount of $totalSteps steps completed',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Finish button with animation
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            child: ElevatedButton(
+              onPressed: allComplete ? _finishCooking : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: allComplete
+                    ? const Color(0xFF2EC4B6)
+                    : Colors.grey[300],
+                foregroundColor: allComplete
+                    ? Colors.white
+                    : Colors.grey[500],
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: allComplete ? 4 : 0,
+                shadowColor: allComplete
+                    ? const Color(0xFF2EC4B6).withOpacity(0.4)
+                    : Colors.transparent,
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: allComplete
+                    ? const Row(
+                  key: ValueKey('complete'),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.restaurant, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Finish Cooking!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                )
+                    : Text(
+                  key: const ValueKey('incomplete'),
+                  'Complete ${totalSteps - completedCount} more step${totalSteps - completedCount > 1 ? 's' : ''}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
