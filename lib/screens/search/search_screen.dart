@@ -6,6 +6,7 @@ import 'package:flavour/screens/home/widgets/recipe_card.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
+
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -14,13 +15,36 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   String _query = '';
-  List<String> _recentSearches = ['Pasta', 'Chicken', 'Salad', 'Dessert,'];
+  bool _hasSearched = false;  // Track if user has searched
 
   @override
   void dispose() {
     _searchController.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _performSearch(String query) {
+    setState(() {
+      _query = query;
+      _hasSearched = query.isNotEmpty;
+    });
+  }
+
+  void _selectCategory(String category) {
+    _searchController.text = category;
+    setState(() {
+      _query = category;
+      _hasSearched = true;
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _query = '';
+      _hasSearched = false;
+    });
   }
 
   @override
@@ -33,6 +57,7 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Search Header
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -45,34 +70,31 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Search TextField
                   Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: TextField(
                       controller: _searchController,
                       focusNode: _focusNode,
                       onChanged: (value) {
-                        setState(() {
-                          _query = value;
-                        });
+                        setState(() => _query = value);
+                        // Only mark as searched if there's actual text
+                        if (value.isNotEmpty) {
+                          _hasSearched = true;
+                        }
                       },
+                      onSubmitted: _performSearch,
                       decoration: InputDecoration(
-                        hintText: 'Search recipes,ingredients......',
+                        hintText: 'Make it happen...',
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: _query.isNotEmpty
                             ? IconButton(
-                                onPressed: () {
-                                  _searchController.clear();
-                                  setState(() {
-                                    _query = "";
-                                  });
-                                },
-                                icon: const Icon(Icons.clear),
-                              )
+                          icon: const Icon(Icons.clear),
+                          onPressed: _clearSearch,
+                        )
                             : null,
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
@@ -85,9 +107,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
+
+            // Content
             Expanded(
-              child: _query.isNotEmpty
-                  ? _buildSuggestions()
+              child: !_hasSearched
+                  ? _buildInitialState()  // Show categories only
                   : _buildSearchResults(searchResults, recipeProvider),
             ),
           ],
@@ -96,44 +120,45 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildSuggestions() {
+  Widget _buildInitialState() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Recent Searches',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _recentSearches.map((search) {
-              return ActionChip(
-                label: Text(search),
-                avatar: const Icon(Icons.history, size: 18),
-                onPressed: () {
-                  _searchController.text = search;
-                  setState(() {
-                    _query = search;
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 24),
+          // Popular Categories
           Text(
             'Popular Categories',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           _buildCategoryGrid(),
+          const SizedBox(height: 40),
+
+          // Hint text
+          Center(
+            child: Column(
+              children: [
+                Icon(
+                  Icons.search,
+                  size: 48,
+                  color: Colors.grey[300],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Search for recipes or\nselect a category above',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -141,29 +166,14 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildCategoryGrid() {
     final categories = [
-      {
-        'name': 'Breakfast',
-        'icon': Icons.breakfast_dining,
-        'color': const Color(0xFFFF9F43),
-      },
-      {
-        'name': 'Pasta',
-        'icon': Icons.dinner_dining,
-        'color': const Color(0xFFFF6B35),
-      },
+      {'name': 'Breakfast', 'icon': Icons.breakfast_dining, 'color': const Color(0xFFFF9F43)},
+      {'name': 'Pasta', 'icon': Icons.dinner_dining, 'color': const Color(0xFFFF6B35)},
       {'name': 'Salads', 'icon': Icons.eco, 'color': const Color(0xFF2EC4B6)},
       {'name': 'Dessert', 'icon': Icons.cake, 'color': const Color(0xFFE84393)},
-      {
-        'name': 'Seafood',
-        'icon': Icons.set_meal,
-        'color': const Color(0xFF0984E3),
-      },
-      {
-        'name': 'Asian',
-        'icon': Icons.ramen_dining,
-        'color': const Color(0xFFFD79A8),
-      },
+      {'name': 'Seafood', 'icon': Icons.set_meal, 'color': const Color(0xFF0984E3)},
+      {'name': 'Asian', 'icon': Icons.ramen_dining, 'color': const Color(0xFFFD79A8)},
     ];
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -177,12 +187,7 @@ class _SearchScreenState extends State<SearchScreen> {
       itemBuilder: (context, index) {
         final category = categories[index];
         return GestureDetector(
-          onTap: () {
-            _searchController.text = category['name'] as String;
-            setState(() {
-              _query = category['name'] as String;
-            });
-          },
+          onTap: () => _selectCategory(category['name'] as String),
           child: Container(
             decoration: BoxDecoration(
               color: (category['color'] as Color).withOpacity(0.1),
@@ -219,37 +224,57 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: Colors.grey[400],
+            ),
             const SizedBox(height: 16),
             Text(
               'No recipes found',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Try a different search....',
+              'Try a different search term',
               style: TextStyle(color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 24),
+            TextButton.icon(
+              onPressed: _clearSearch,
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back to categories'),
             ),
           ],
         ),
       );
     }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            '${results.length} results found!',
-            style: TextStyle(color: Colors.grey[600]),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${results.length} results found',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              TextButton(
+                onPressed: _clearSearch,
+                child: const Text('Clear'),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 8),
         Expanded(
           child: GridView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
