@@ -626,28 +626,49 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 24),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(16),
             ),
             child: TabBar(
               indicator: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
+                    color: const Color(0xFFFF6B35).withOpacity(0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
+              indicatorSize: TabBarIndicatorSize.tab,
               indicatorPadding: const EdgeInsets.all(4),
               labelColor: const Color(0xFFFF6B35),
-              unselectedLabelColor: Colors.grey[600],
+              unselectedLabelColor: Colors.grey[500],
               labelStyle: const TextStyle(fontWeight: FontWeight.bold),
               dividerColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
               tabs: const [
-                Tab(text: 'Steps'),
-                Tab(text: 'Ingredients'),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.list_alt, size: 18),
+                      SizedBox(width: 6),
+                      Text('Steps'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.egg_alt_outlined, size: 18),
+                      SizedBox(width: 6),
+                      Text('Ingredients'),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
