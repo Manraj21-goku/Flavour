@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flavour/models/recipe.dart';
 import 'package:flavour/widgets/common/animated_like_button.dart';
 import 'package:flavour/core/painters/nutrition_chart_painter.dart';
+import 'package:flavour/screens/cooking/cooking_session_screen.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
@@ -260,7 +261,15 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
       ),
       // Start cooking button
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context)=> CookingSessionScreen(
+                      recipe: widget.recipe)
+              )
+          );
+        },
         backgroundColor: const Color(0xFFFF6B35),
         foregroundColor: Colors.white,
         icon: const Icon(Icons.play_arrow),
