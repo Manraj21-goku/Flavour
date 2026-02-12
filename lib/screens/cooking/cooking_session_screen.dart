@@ -363,9 +363,6 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
               ],
             ),
           ),
-
-          const SizedBox(height: 24),
-
           // Timer display
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
