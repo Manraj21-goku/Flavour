@@ -280,25 +280,13 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
       children: [
         // Header
         _buildHeader(),
-
+        _buildCookingAnimation(),
+        const SizedBox(
+          height: 16,
+        ),
         // Main content (scrollable)
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Cooking Animation & Timer
-                _buildCookingAnimation(),
-
-                const SizedBox(height: 16),
-
-                // Recipe Details
-                SizedBox(
-                  height: 300, // Fixed height for tabs
-                  child: _buildRecipeDetails(),
-                ),
-              ],
-            ),
-          ),
+            child: _buildRecipeDetails()
         ),
 
         // Bottom Controls
@@ -714,7 +702,12 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
 
   Widget _buildStepsTab() {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 8,
+        bottom: 20,  // Extra space so last item scrolls above bottom bar
+      ),
       itemCount: widget.recipe.instructions.length,
       itemBuilder: (context, index) {
         final isCompleted = _stepCompleted[index];
@@ -748,7 +741,16 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
               } else if (index == _currentStep) {
                 // COMPLETE: Mark current step as done
                 _stepCompleted[index] = true;
-                // Move to next step if not the last one
+                if (index == 0 && !_isRunning && !_isCompleted) {
+                  _startTimer();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Timer started! Let\'s cook! 🍳'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Color(0xFF2EC4B6),
+                    ),
+                  );
+                }
                 if (index < widget.recipe.instructions.length - 1) {
                   _currentStep = index + 1;
                 }
@@ -873,7 +875,12 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
   }
   Widget _buildIngredientsTab() {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 8,
+        bottom: 20,  // Extra space so last item scrolls above bottom bar
+      ),
       itemCount: widget.recipe.ingredients.length,
       itemBuilder: (context, index) {
         final ingredient = widget.recipe.ingredients[index];
