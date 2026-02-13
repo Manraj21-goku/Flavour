@@ -3,6 +3,8 @@ import 'package:flavour/models/recipe.dart';
 import 'package:flavour/widgets/common/animated_like_button.dart';
 import 'package:flavour/core/painters/nutrition_chart_painter.dart';
 import 'package:flavour/screens/cooking/cooking_session_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:flavour/providers/recipe_provider.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
@@ -114,7 +116,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
                     isLiked: widget.recipe.isFavorite,
                     onChanged: (value) {
                       setState(() {
-                        widget.recipe.isFavorite = value;
+                        //widget.recipe.isFavorite = value;
+                        Provider.of<RecipeProvider>(context, listen: false)
+                            .toggleFavourite(widget.recipe.id);
                       });
                     },
                     size: 24,

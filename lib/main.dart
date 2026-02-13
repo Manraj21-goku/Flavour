@@ -1,3 +1,5 @@
+import 'package:flavour/providers/post_provider.dart';
+import 'package:flavour/screens/posts/post_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flavour/core/theme/app_theme.dart';
@@ -17,6 +19,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => RecipeProvider()),
+        ChangeNotifierProvider(create: (_) => PostProvider()),
       ],
       child: const FlavourApp(),
     ),
@@ -64,6 +67,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     SearchScreen(),
+    PostScreen(),
     FavouritesScreen(),
     ProfileScreen(),
   ];
@@ -88,6 +92,11 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icons.search_outlined,
             activeIcon: Icons.search,
             label: 'Search',
+          ),
+          BottomNavItem(
+            icon: Icons.add,
+            activeIcon: Icons.add_outlined,
+            label: 'Posts',
           ),
           BottomNavItem(
             icon: Icons.favorite_outline,

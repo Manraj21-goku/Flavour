@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         //
                         GestureDetector(
                           onTap: () {
-                            MainScreen.switchToTab(context, 3);
+                            MainScreen.switchToTab(context, 4);
                           },
                           child: CircleAvatar(
                             radius: 28,

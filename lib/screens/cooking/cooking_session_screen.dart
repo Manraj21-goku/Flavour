@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flavour/providers/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flavour/models/recipe.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 
 class CookingSessionScreen extends StatefulWidget {
@@ -1042,6 +1044,10 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(onPressed:  _exitWithoutSaving, icon: const Icon(Icons.close),style: IconButton.styleFrom(backgroundColor: Colors.grey[200]),),
+            ),
             const SizedBox(height: 40),
 
             // Celebration animation
@@ -1215,15 +1221,20 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () {
+                    onPressed: _capturedPhoto !=null ? () {
                       // Share functionality
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Share feature coming soon!')),
                       );
-                    },
+                    }: null,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFFF6B35),
-                      side: const BorderSide(color: Color(0xFFFF6B35)),
+                      foregroundColor: _capturedPhoto != null
+                          ? const Color(0xFFFF6B35)
+                          : Colors.grey,
+                      side: BorderSide(
+                        color: _capturedPhoto != null
+                            ? const Color(0xFFFF6B35)
+                            : Colors.grey[300]!,),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -1236,9 +1247,12 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
+                //    onPressed: () => Navigator.pop(context),
+                  onPressed: _capturedPhoto!= null ?_saveAndExit :null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B35),
+                      backgroundColor: _capturedPhoto != null
+                          ? const Color(0xFFFF6B35)
+                          : Colors.grey[300],
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -1254,6 +1268,46 @@ class _CookingSessionScreenState extends State<CookingSessionScreen>
             const SizedBox(height: 40),
           ],
         ),
+      ),
+    );
+  }
+  void _saveAndExit () {
+    if(_capturedPhoto !=null) {
+      final postProvider = Provider.of<PostProvider>(context,listen: false);
+      postProvider.addPost(recipeName: widget.recipe.title, recipeId: widget.recipe.id, photoPath: _capturedPhoto!.path);
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Posted to your feed! 🎉'),
+      backgroundColor: Color(0xFF2EC4B6),)
+    );
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
+  void _exitWithoutSaving() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard post?'),
+        content: const Text('Your photo won\'t be saved.'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), // Close dialog
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.of(context).popUntil((route) => route.isFirst); // Go home
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Discard'),
+          ),
+        ],
       ),
     );
   }
